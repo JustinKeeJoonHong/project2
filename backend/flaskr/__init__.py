@@ -10,7 +10,6 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 
-
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -33,7 +32,6 @@ def create_app(test_config=None):
         )
         return response
 
-
     """
     @TODO:
     Create an endpoint to handle GET requests
@@ -42,12 +40,12 @@ def create_app(test_config=None):
     @app.route('/categories', methods=["GET"])
     def get_categories():
         categories = Category.query.all()
-        categories_dict = {str(category.id) : category.type for category in categories}
-        
+        categories_dict = {
+            str(category.id): category.type for category in categories}
+
         return jsonify({
-            'categories':categories_dict
+            'categories': categories_dict
         })
-    
 
     """
     @TODO:
@@ -67,19 +65,19 @@ def create_app(test_config=None):
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         questions = Question.query.all()
- 
+
         categories = Category.query.all()
-        categories_dict = {str(category.id) : category.type for category in categories}
-        
+        categories_dict = {
+            str(category.id): category.type for category in categories}
+
         formatted_questions = [question.format() for question in questions]
-
-
 
         current_category = None
         category_filter = request.args.get('category', None)
         if category_filter:
             current_category = Category.query.get(category_filter)
-            formatted_questions = [question for question in formatted_questions if question['category'] == current_category.id]
+            formatted_questions = [
+                question for question in formatted_questions if question['category'] == current_category.id]
 
         paginated_questions = formatted_questions[start:end]
 
@@ -90,7 +88,7 @@ def create_app(test_config=None):
             'current_category': current_category.format() if current_category else None,
             'categories': categories_dict
         })
-    
+
     """
     @TODO:
     Create an endpoint to DELETE question using a question ID.
@@ -99,21 +97,21 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
-    @app.route("/questions/<int:questions_id>" ,methods=["DELETE"])
+    @app.route("/questions/<int:questions_id>", methods=["DELETE"])
     def delete_question(questions_id):
-        
+
         try:
-            if questions_id==-1:
+            if questions_id == -1:
                 abort(404)
-            question = Question.query.filter(Question.id == questions_id).one_or_none()
+            question = Question.query.filter(
+                Question.id == questions_id).one_or_none()
             question.delete()
             return jsonify({
-                    "success": True,
+                "success": True,
             })
 
         except:
             abort(422)
-
 
     """
     @TODO:
@@ -128,25 +126,25 @@ def create_app(test_config=None):
     @app.route('/questions', methods=["POST"])
     def create_question():
         data = request.get_json()
-        
+
         question = data.get("question")
         answer = data.get("answer")
-        
+
         if not question or not answer:
             abort(422)
 
         difficulty = data.get("difficulty")
         category = data.get("category")
-        
+
         try:
-            new_question = Question(question = question, answer = answer, difficulty=difficulty, category= category)
+            new_question = Question(
+                question=question, answer=answer, difficulty=difficulty, category=category)
             new_question.insert()
             return jsonify({
-                'success': True,    
+                'success': True,
             })
         except:
             abort(422)
-
 
     """
     @TODO:
@@ -158,7 +156,7 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
-    @app.route('/search' , methods=['POST'])
+    @app.route('/search', methods=['POST'])
     def search_questions():
         data = request.get_json()
         print(data)
@@ -166,18 +164,18 @@ def create_app(test_config=None):
 
         search_term = data.get('searchTerm', None)
         if search_term:
-            search_results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
-            search_questions_list = [question.format() for question in search_results]
-        
+            search_results = Question.query.filter(
+                Question.question.ilike(f'%{search_term}%')).all()
+            search_questions_list = [question.format()
+                                     for question in search_results]
+
         questions = Question.query.all()
 
         return jsonify({
             "questions": search_questions_list,
-            "totalQuestions" : len(questions),
-            "currentCategory" : ""
+            "totalQuestions": len(questions),
+            "currentCategory": ""
         })
-
-
 
     """
     @TODO:
@@ -193,9 +191,10 @@ def create_app(test_config=None):
         page = request.args.get('page', 1, type=int)
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
-        select_category = Category.query.get(id) 
-        select_questions_query = Question.query.filter(Question.category==id)
-        select_questions = [question.format() for question in select_questions_query.all()]
+        select_category = Category.query.get(id)
+        select_questions_query = Question.query.filter(Question.category == id)
+        select_questions = [question.format()
+                            for question in select_questions_query.all()]
         paginated_questions = select_questions[start:end]
 
         return jsonify({
@@ -203,8 +202,6 @@ def create_app(test_config=None):
             'total_questions': len(select_questions),
             'current_category': str(select_category.type)
         })
-
-
 
     """
     @TODO:
@@ -224,26 +221,26 @@ def create_app(test_config=None):
         current_category = data.get('quiz_category')
 
         print(current_category)
-        if(current_category['id'] == 0) :
+        if (current_category['id'] == 0):
             questions = Question.query.all()
-    
-        else : 
-            questions = Question.query.filter_by(category=current_category['id']).all()
-        
+
+        else:
+            questions = Question.query.filter_by(
+                category=current_category['id']).all()
+
         if pre_question_num_list:
-            questions = [question for question in questions if question.id not in pre_question_num_list]
-        
+            questions = [
+                question for question in questions if question.id not in pre_question_num_list]
+
         if questions:
             next_question = random.choice(questions).format()
-        else :
-            next_question = None        
-
+        else:
+            next_question = None
 
         return jsonify({
             "question": next_question,
 
         })
-
 
     """
     @TODO:
@@ -252,4 +249,3 @@ def create_app(test_config=None):
     """
 
     return app
-
