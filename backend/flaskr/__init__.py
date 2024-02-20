@@ -15,13 +15,8 @@ def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
 
-    """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-    """
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-    """
-    @TODO: Use the after_request decorator to set Access-Control-Allow
-    """
+    
     @app.after_request
     def after_request(response):
         response.headers.add(
@@ -84,7 +79,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'questions': paginated_questions,
-            'total_questions': len(questions),
+            'total_questions': len(formatted_questions),
             'current_category': current_category.format() if current_category else None,
             'categories': categories_dict
         })
@@ -144,7 +139,7 @@ def create_app(test_config=None):
                 'success': True,
             })
         except:
-            abort(422)
+            abort(500)
 
     """
     @TODO:
@@ -159,9 +154,16 @@ def create_app(test_config=None):
     @app.route('/search', methods=['POST'])
     def search_questions():
         data = request.get_json()
-        print(data)
         current_category = data.get("category", None)
 
+        if current_category:
+            category_object = Category.query.get(current_category)
+            current_category_name = category_object.type if category_object else "Unknown"
+        else:
+            current_category_name = "All Categories"
+        
+        search_term = data.get('searchTerm', None)
+        
         search_term = data.get('searchTerm', None)
         if search_term:
             search_results = Question.query.filter(
@@ -174,7 +176,7 @@ def create_app(test_config=None):
         return jsonify({
             "questions": search_questions_list,
             "totalQuestions": len(questions),
-            "currentCategory": ""
+            "currentCategory": current_category_name
         })
 
     """
