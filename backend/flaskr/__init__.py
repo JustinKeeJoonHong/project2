@@ -43,7 +43,7 @@ def create_app(test_config=None):
     def get_categories():
         categories = Category.query.all()
         categories_dict = {str(category.id) : category.type for category in categories}
-        
+        print("test for git")
         
         return jsonify({
             'categories':categories_dict
