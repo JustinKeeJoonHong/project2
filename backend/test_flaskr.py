@@ -47,7 +47,7 @@ class TriviaTestCase(unittest.TestCase):
     # def test_get_questions(self):
     #     res = self.client().get('/questions?page=2')
     #     data = json.loads(res.data)
-
+        
     #     self.assertEqual(len(data['questions']), 6)
     #     self.assertEqual(data['total_questions'],16)
         
@@ -58,15 +58,24 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
         
+    # def test_delete_question_success(self):
 
-    def test_delete_question(self):
+    #     res = self.client().delete('/questions/5')
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data['success'])
+    #     self.assertEqual(data["deleted_question_id"], 5)
+
+
+    def test_delete_question_failure(self):
 
         res = self.client().delete('/questions/1000')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
-        # self.assertEqual(data["deleted_question_id"], )
+       
 
     def test_create_question(self):
         request_data = {
