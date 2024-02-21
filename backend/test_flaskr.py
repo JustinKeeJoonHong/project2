@@ -77,7 +77,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertFalse(data['success'])
        
 
-    def test_create_question(self):
+    def test_create_question_failure(self):
         request_data = {
             "question": "create test",
             "answer": "test",
@@ -91,6 +91,21 @@ class TriviaTestCase(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], "There is internal Server Error.")
         # self.assertEqual(data['question'], "create asd1test")
+
+    # def test_create_question_success(self):
+    #     request_data = {
+    #         "question": "create test",
+    #         "answer": "test",
+    #         "difficulty": 1,
+    #         "category": 5
+    #     }
+    #     res = self.client().post('/questions', json=request_data)
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertTrue(data['success'])
+    #     self.assertEqual(data['question'], "create test")
+
 
     def test_get_questions_by_category(self):
         res = self.client().get('/categories/2/questions')
