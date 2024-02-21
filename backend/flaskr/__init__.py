@@ -97,16 +97,19 @@ def create_app(test_config=None):
 
         try:
             if questions_id == -1:
-                abort(404)
+                return jsonify({"success": False, "error": 404}), 404
             question = Question.query.filter(
                 Question.id == questions_id).one_or_none()
+            if question is None:
+                return jsonify({"success": False, "error": 404}), 404
             question.delete()
             return jsonify({
                 "success": True,
+                "deleted_question_id" : questions_id
             })
 
         except:
-            abort(422)
+            return jsonify({"success": False, "error": 422}), 422
 
     """
     @TODO:
