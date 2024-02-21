@@ -94,14 +94,13 @@ def create_app(test_config=None):
     """
     @app.route("/questions/<int:questions_id>", methods=["DELETE"])
     def delete_question(questions_id):
-
+        if questions_id == -1:
+                abort(404)
+        question = Question.query.filter(Question.id == questions_id).one_or_none()
+            
+        if question is None :
+                abort(404)
         try:
-            if questions_id == -1:
-                abort(404)
-            question = Question.query.filter(
-                Question.id == questions_id).one_or_none()
-            if question is None:
-                abort(404)
             question.delete()
 
             return jsonify({
@@ -109,7 +108,8 @@ def create_app(test_config=None):
                 "deleted_question_id" : questions_id
             })
 
-        except:
+        except Exception as e:
+            print(e)
             abort(422)
 
     """
@@ -130,10 +130,13 @@ def create_app(test_config=None):
         answer = data.get("answer")
 
         if not question or not answer:
-            abort(422)
+            abort(404)
 
         difficulty = data.get("difficulty")
         category = data.get("category")
+
+        
+
 
         try:
             new_question = Question(
@@ -263,6 +266,7 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -270,6 +274,14 @@ def create_app(test_config=None):
             "error":400,
             "message": "Bad request. Please check your data."
         }),400
+    
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error":404,
+            "message": "We can't found your data. Please check your data."
+        }),404
     
     @app.errorhandler(422)
     def unprocessable(error):
