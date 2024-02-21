@@ -72,6 +72,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 500)
         self.assertFalse(data['success'])
+        self.assertEqual(data['message'], "There is internal Server Error.")
         #self.assertEqual(data['question'], "create asd1test")
         
 

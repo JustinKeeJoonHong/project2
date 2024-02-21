@@ -97,11 +97,11 @@ def create_app(test_config=None):
 
         try:
             if questions_id == -1:
-                return jsonify({"success": False, "error": 404}), 404
+                abort(404)
             question = Question.query.filter(
                 Question.id == questions_id).one_or_none()
             if question is None:
-                return jsonify({"success": False, "error": 404}), 404
+                abort(404)
             question.delete()
 
             return jsonify({
@@ -110,7 +110,7 @@ def create_app(test_config=None):
             })
 
         except:
-            return jsonify({"success": False, "error": 422}), 422
+            abort(422)
 
     """
     @TODO:
@@ -130,7 +130,7 @@ def create_app(test_config=None):
         answer = data.get("answer")
 
         if not question or not answer:
-            return jsonify({"success": False, "error": 422}), 422
+            abort(422)
 
         difficulty = data.get("difficulty")
         category = data.get("category")
@@ -145,7 +145,7 @@ def create_app(test_config=None):
                 'question': question
             })
         except:
-            return jsonify({"success": False, "error": 500}), 500
+            abort(500)
 
     """
     @TODO:
@@ -177,7 +177,7 @@ def create_app(test_config=None):
             search_questions_list = [question.format()
                                      for question in search_results]
         else:
-            return jsonify({"success": False, "error": 400}), 400
+            abort(400)
 
         questions = Question.query.all()
 
@@ -241,9 +241,7 @@ def create_app(test_config=None):
                 category=current_category['id']).all()
             
         if not questions:
-            return jsonify({
-                'success': False
-            }), 422    
+            abort(422)  
 
         if pre_question_num_list:
             questions = [
@@ -288,4 +286,5 @@ def create_app(test_config=None):
             "error" : 500,
             "message" : "There is internal Server Error."
         }), 500
+    
     return app
