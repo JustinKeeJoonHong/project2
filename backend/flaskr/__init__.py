@@ -4,6 +4,7 @@ from flask import Flask, request, abort, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import math
 
 from models import setup_db, Question, Category
 
@@ -60,6 +61,9 @@ def create_app(test_config=None):
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         questions = Question.query.all()
+        print(math.ceil(len(questions)/10))
+        if page > math.ceil(len(questions)/10):
+            abort(400)
 
         categories = Category.query.all()
         categories_dict = {
