@@ -55,8 +55,9 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/questions?page=100')
         data = json.loads(res.data)
 
+        self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
-        self.assertEqual(data['total_questions'],16)
+        
 
     def test_delete_question(self):
 
