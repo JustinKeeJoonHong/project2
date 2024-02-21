@@ -4,6 +4,7 @@ from flask import Flask, request, abort, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import math
 
 from models import setup_db, Question, Category
 
@@ -60,6 +61,9 @@ def create_app(test_config=None):
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         questions = Question.query.all()
+        print(math.ceil(len(questions)/10))
+        if page > math.ceil(len(questions)/10):
+            abort(400)
 
         categories = Category.query.all()
         categories_dict = {
@@ -183,6 +187,7 @@ def create_app(test_config=None):
         questions = Question.query.all()
 
         return jsonify({
+            "success": True,
             "questions": search_questions_list,
             "totalQuestions": len(questions),
             "currentCategory": current_category_name
@@ -199,20 +204,26 @@ def create_app(test_config=None):
     """
     @app.route('/categories/<int:id>/questions', methods=['GET'])
     def get_questions_by_category(id):
-        page = request.args.get('page', 1, type=int)
-        start = (page - 1) * QUESTIONS_PER_PAGE
-        end = start + QUESTIONS_PER_PAGE
-        select_category = Category.query.get(id)
-        select_questions_query = Question.query.filter(Question.category == id)
-        select_questions = [question.format()
-                            for question in select_questions_query.all()]
-        paginated_questions = select_questions[start:end]
 
-        return jsonify({
-            'questions': paginated_questions,
-            'total_questions': len(select_questions),
-            'current_category': str(select_category.type)
-        })
+        try:
+            page = request.args.get('page', 1, type=int)
+            start = (page - 1) * QUESTIONS_PER_PAGE
+            end = start + QUESTIONS_PER_PAGE
+            select_category = Category.query.get(id)
+            select_questions_query = Question.query.filter(Question.category == id)
+            select_questions = [question.format()
+                                for question in select_questions_query.all()]
+            paginated_questions = select_questions[start:end]
+
+            return jsonify({
+                'success': True,
+                'questions': paginated_questions,
+                'total_questions': len(select_questions),
+                'current_category': str(select_category.type)
+            })
+        except Exception as e:
+            print(e)
+            abort(400)
 
     """
     @TODO:
@@ -231,6 +242,9 @@ def create_app(test_config=None):
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
 
+        if not current_category:
+            abort(400)
+
         if (current_category['id'] == 0):
 
             questions = Question.query.all()
@@ -240,7 +254,10 @@ def create_app(test_config=None):
                 category=current_category['id']).all()
 
         if not questions:
-            abort(422)
+            return jsonify({
+                "success": False,
+                "message" : "there is no question in this category"
+            })
 
         if pre_question_num_list:
             questions = [
