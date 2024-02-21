@@ -107,11 +107,15 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertEqual(data['question'], "create test")
 
 
-    def test_get_questions_by_category(self):
+    def test_get_questions_by_category_success(self):
         res = self.client().get('/categories/2/questions')
         data = json.loads(res.data)
 
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
         self.assertEqual(data['current_category'], 'Art')
+
+
 
     def test_search(self):
         search_term = {"searchTerm": "movie"}
@@ -121,7 +125,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(data["questions"]), 1)
 
     def test_quizz(self):
-        print("come to quiz test ------")
         request_data = {
             'previous_questions': [20, 21],
             'quiz_category': {'type': 'Science', 'id': '1'}
