@@ -16,7 +16,7 @@ def create_app(test_config=None):
     setup_db(app)
 
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-    
+
     @app.after_request
     def after_request(response):
         response.headers.add(
@@ -95,17 +95,18 @@ def create_app(test_config=None):
     @app.route("/questions/<int:questions_id>", methods=["DELETE"])
     def delete_question(questions_id):
         if questions_id == -1:
-                abort(404)
-        question = Question.query.filter(Question.id == questions_id).one_or_none()
-            
-        if question is None :
-                abort(404)
+            abort(404)
+        question = Question.query.filter(
+            Question.id == questions_id).one_or_none()
+
+        if question is None:
+            abort(404)
         try:
             question.delete()
 
             return jsonify({
                 "success": True,
-                "deleted_question_id" : questions_id
+                "deleted_question_id": questions_id
             })
 
         except Exception as e:
@@ -135,16 +136,13 @@ def create_app(test_config=None):
         difficulty = data.get("difficulty")
         category = data.get("category")
 
-        
-
-
         try:
             new_question = Question(
                 question=question, answer=answer, difficulty=difficulty, category=category)
             new_question.insert()
             return jsonify({
                 'success': True,
-                'create_question_id' : new_question.id,
+                'create_question_id': new_question.id,
                 'question': question
             })
         except:
@@ -170,9 +168,9 @@ def create_app(test_config=None):
             current_category_name = category_object.type if category_object else "Unknown"
         else:
             current_category_name = "All Categories"
-        
+
         search_term = data.get('searchTerm', None)
-        
+
         search_term = data.get('searchTerm', None)
         if search_term:
             search_results = Question.query.filter(
@@ -232,19 +230,17 @@ def create_app(test_config=None):
         data = request.get_json()
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
-        
-        
 
         if (current_category['id'] == 0):
-            
+
             questions = Question.query.all()
 
         else:
             questions = Question.query.filter_by(
                 category=current_category['id']).all()
-            
+
         if not questions:
-            abort(422)  
+            abort(422)
 
         if pre_question_num_list:
             questions = [
@@ -258,7 +254,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": True,
             "question": next_question,
-            "next_question_id" : next_question['id']
+            "next_question_id": next_question['id']
         })
 
     """
@@ -266,37 +262,37 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
-    
+
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
             "success": False,
-            "error":400,
+            "error": 400,
             "message": "Bad request. Please check your data."
-        }),400
-    
+        }), 400
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
             "success": False,
-            "error":404,
+            "error": 404,
             "message": "We can't found your data. Please check your data."
-        }),404
-    
+        }), 404
+
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
             "success": False,
-            "error":422,
+            "error": 422,
             "message": "Not found"
-        }),422
+        }), 422
 
     @app.errorhandler(500)
     def server_error(error):
         return jsonify({
-            "success" : False,
-            "error" : 500,
-            "message" : "There is internal Server Error."
+            "success": False,
+            "error": 500,
+            "message": "There is internal Server Error."
         }), 500
-    
+
     return app
