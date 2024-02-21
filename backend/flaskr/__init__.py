@@ -130,7 +130,7 @@ def create_app(test_config=None):
         answer = data.get("answer")
 
         if not question or not answer:
-            abort(422)
+            return jsonify({"success": False, "error": 422}), 422
 
         difficulty = data.get("difficulty")
         category = data.get("category")
@@ -141,10 +141,11 @@ def create_app(test_config=None):
             new_question.insert()
             return jsonify({
                 'success': True,
-                'create_question_id' : new_question.id
+                'create_question_id' : new_question.id,
+                'question': question
             })
         except:
-            abort(500)
+            return jsonify({"success": False, "error": 500}), 500
 
     """
     @TODO:
