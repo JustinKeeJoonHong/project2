@@ -47,17 +47,17 @@ class TriviaTestCase(unittest.TestCase):
     # def test_get_questions(self):
     #     res = self.client().get('/questions?page=2')
     #     data = json.loads(res.data)
-        
+
     #     self.assertEqual(len(data['questions']), 6)
     #     self.assertEqual(data['total_questions'],16)
-        
+
     def test_get_questions_failure(self):
         res = self.client().get('/questions?page=100')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
-        
+
     # def test_delete_question_success(self):
 
     #     res = self.client().delete('/questions/5')
@@ -67,7 +67,6 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertTrue(data['success'])
     #     self.assertEqual(data["deleted_question_id"], 5)
 
-
     def test_delete_question_failure(self):
 
         res = self.client().delete('/questions/1000')
@@ -75,7 +74,6 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
-       
 
     def test_create_question_failure(self):
         request_data = {
@@ -106,7 +104,6 @@ class TriviaTestCase(unittest.TestCase):
     #     self.assertTrue(data['success'])
     #     self.assertEqual(data['question'], "create test")
 
-
     def test_get_questions_by_category_success(self):
         res = self.client().get('/categories/2/questions')
         data = json.loads(res.data)
@@ -114,16 +111,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertEqual(data['current_category'], 'Art')
-    
+
     def test_get_questions_by_category_failure(self):
         res = self.client().get('/categories/10/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
-        self.assertEqual(data['message'], "Bad request. Please check your data.")
-
-
+        self.assertEqual(
+            data['message'], "Bad request. Please check your data.")
 
     def test_search_success(self):
         search_term = {"searchTerm": "movie"}
@@ -141,7 +137,6 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data["success"])
-        
 
     def test_quizz_success(self):
         request_data = {
@@ -153,7 +148,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertTrue(data['success'])
         self.assertEqual(data['next_question_id'], 22)
-    
+
     def test_quizz_failure(self):
         request_data = {
             'previous_questions': [20, 21],
@@ -163,7 +158,6 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
-        
 
 
 # Make the tests conveniently executable

@@ -210,7 +210,8 @@ def create_app(test_config=None):
             start = (page - 1) * QUESTIONS_PER_PAGE
             end = start + QUESTIONS_PER_PAGE
             select_category = Category.query.get(id)
-            select_questions_query = Question.query.filter(Question.category == id)
+            select_questions_query = Question.query.filter(
+                Question.category == id)
             select_questions = [question.format()
                                 for question in select_questions_query.all()]
             paginated_questions = select_questions[start:end]
@@ -256,7 +257,7 @@ def create_app(test_config=None):
         if not questions:
             return jsonify({
                 "success": False,
-                "message" : "there is no question in this category"
+                "message": "there is no question in this category"
             })
 
         if pre_question_num_list:
