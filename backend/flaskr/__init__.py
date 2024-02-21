@@ -177,7 +177,7 @@ def create_app(test_config=None):
             search_questions_list = [question.format()
                                      for question in search_results]
         else:
-            abort(400)
+            return jsonify({"success": False, "error": 400}), 400
 
         questions = Question.query.all()
 
@@ -229,8 +229,9 @@ def create_app(test_config=None):
         data = request.get_json()
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
-
         
+        
+
         if (current_category['id'] == 0):
             
             questions = Question.query.all()
@@ -254,8 +255,9 @@ def create_app(test_config=None):
             next_question = None
 
         return jsonify({
+            "success": True,
             "question": next_question,
-
+            "next_question_id" : next_question['id']
         })
 
     """

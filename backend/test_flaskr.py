@@ -75,10 +75,6 @@ class TriviaTestCase(unittest.TestCase):
         #self.assertEqual(data['question'], "create asd1test")
         
 
-
-
-
-
     def test_get_questions_by_category(self):
         res = self.client().get('/categories/2/questions')
         data = json.loads(res.data)
@@ -91,6 +87,18 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
         
         self.assertEqual(len(data["questions"]),1)
+
+    def test_quizz(self):
+        print("come to quiz test ------")
+        request_data = {
+            'previous_questions': [20, 21],
+            'quiz_category': {'type': 'Science', 'id': '1'}
+        }
+        res = self.client().post('/quizzes', json=request_data)
+        data = json.loads(res.data)
+
+        self.assertTrue(data['success'])
+        self.assertEqual(data['next_question_id'], 22)
 
 
 
