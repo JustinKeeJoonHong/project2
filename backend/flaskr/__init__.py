@@ -242,6 +242,9 @@ def create_app(test_config=None):
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
 
+        if not current_category:
+            abort(400)
+
         if (current_category['id'] == 0):
 
             questions = Question.query.all()
@@ -251,7 +254,10 @@ def create_app(test_config=None):
                 category=current_category['id']).all()
 
         if not questions:
-            abort(422)
+            return jsonify({
+                "success": False,
+                "message" : "there is no question in this category"
+            })
 
         if pre_question_num_list:
             questions = [
