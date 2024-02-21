@@ -187,6 +187,7 @@ def create_app(test_config=None):
         questions = Question.query.all()
 
         return jsonify({
+            "success": True,
             "questions": search_questions_list,
             "totalQuestions": len(questions),
             "currentCategory": current_category_name
