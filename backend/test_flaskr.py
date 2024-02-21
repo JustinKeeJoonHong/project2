@@ -114,6 +114,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertEqual(data['current_category'], 'Art')
+    
+    def test_get_questions_by_category_failure(self):
+        res = self.client().get('/categories/10/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], "Bad request. Please check your data.")
 
 
 
