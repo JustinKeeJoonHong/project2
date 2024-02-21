@@ -103,6 +103,7 @@ def create_app(test_config=None):
             if question is None:
                 return jsonify({"success": False, "error": 404}), 404
             question.delete()
+
             return jsonify({
                 "success": True,
                 "deleted_question_id" : questions_id
@@ -140,6 +141,7 @@ def create_app(test_config=None):
             new_question.insert()
             return jsonify({
                 'success': True,
+                'create_question_id' : new_question.id
             })
         except:
             abort(500)
