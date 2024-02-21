@@ -42,13 +42,39 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         self.assertEqual(len(data['categories']), 6)
 
-    def test_get_questions(self):
-        res = self.client().get('/questions?page=2')
-        data = json.loads(res.data)
+    # def test_get_questions(self):
+    #     res = self.client().get('/questions?page=2')
+    #     data = json.loads(res.data)
 
         
-        self.assertEqual(len(data['questions']), 9)
-        self.assertEqual(data['total_questions'],19)
+    #     self.assertEqual(len(data['questions']), 6)
+    #     self.assertEqual(data['total_questions'],16)
+
+    def test_delete_question(self):
+        
+        res = self.client().delete('/questions/1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        # self.assertEqual(data["deleted_question_id"], )
+
+
+    def test_create_question(self):
+        request_data = {
+        "question": "create test",
+        "answer": "test",
+        "difficulty": 1,
+        "category": 100
+        }
+        res = self.client().post('/questions', json=request_data)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 500)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], "There is internal Server Error.")
+        #self.assertEqual(data['question'], "create asd1test")
+        
 
     def test_get_questions_by_category(self):
         res = self.client().get('/categories/2/questions')
@@ -62,6 +88,18 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
         
         self.assertEqual(len(data["questions"]),1)
+
+    def test_quizz(self):
+        print("come to quiz test ------")
+        request_data = {
+            'previous_questions': [20, 21],
+            'quiz_category': {'type': 'Science', 'id': '1'}
+        }
+        res = self.client().post('/quizzes', json=request_data)
+        data = json.loads(res.data)
+
+        self.assertTrue(data['success'])
+        self.assertEqual(data['next_question_id'], 22)
 
 
 

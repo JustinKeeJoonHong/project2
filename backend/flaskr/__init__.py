@@ -97,11 +97,11 @@ def create_app(test_config=None):
 
         try:
             if questions_id == -1:
-                return jsonify({"success": False, "error": 404}), 404
+                abort(404)
             question = Question.query.filter(
                 Question.id == questions_id).one_or_none()
             if question is None:
-                return jsonify({"success": False, "error": 404}), 404
+                abort(404)
             question.delete()
 
             return jsonify({
@@ -110,7 +110,7 @@ def create_app(test_config=None):
             })
 
         except:
-            return jsonify({"success": False, "error": 422}), 422
+            abort(422)
 
     """
     @TODO:
@@ -141,7 +141,8 @@ def create_app(test_config=None):
             new_question.insert()
             return jsonify({
                 'success': True,
-                'create_question_id' : new_question.id
+                'create_question_id' : new_question.id,
+                'question': question
             })
         except:
             abort(500)
@@ -228,8 +229,9 @@ def create_app(test_config=None):
         data = request.get_json()
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
-
         
+        
+
         if (current_category['id'] == 0):
             
             questions = Question.query.all()
@@ -239,9 +241,7 @@ def create_app(test_config=None):
                 category=current_category['id']).all()
             
         if not questions:
-            return jsonify({
-                'success': False
-            }), 422    
+            abort(422)  
 
         if pre_question_num_list:
             questions = [
@@ -253,8 +253,9 @@ def create_app(test_config=None):
             next_question = None
 
         return jsonify({
+            "success": True,
             "question": next_question,
-
+            "next_question_id" : next_question['id']
         })
 
     """
@@ -285,4 +286,5 @@ def create_app(test_config=None):
             "error" : 500,
             "message" : "There is internal Server Error."
         }), 500
+    
     return app
