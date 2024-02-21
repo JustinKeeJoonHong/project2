@@ -170,6 +170,8 @@ def create_app(test_config=None):
                 Question.question.ilike(f'%{search_term}%')).all()
             search_questions_list = [question.format()
                                      for question in search_results]
+        else:
+            abort(400)
 
         questions = Question.query.all()
 
@@ -222,13 +224,19 @@ def create_app(test_config=None):
         pre_question_num_list = data.get('previous_questions', [])
         current_category = data.get('quiz_category')
 
-        print(current_category)
+        
         if (current_category['id'] == 0):
+            
             questions = Question.query.all()
 
         else:
             questions = Question.query.filter_by(
                 category=current_category['id']).all()
+            
+        if not questions:
+            return jsonify({
+                'success': False
+            }), 422    
 
         if pre_question_num_list:
             questions = [
@@ -249,5 +257,27 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error":400,
+            "message": "Bad request. Please check your data."
+        }),400
+    
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error":422,
+            "message": "unprocessable"
+        }),422
 
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            "success" : False,
+            "error" : 500,
+            "message" : "There is internal Server Error."
+        }), 500
     return app
