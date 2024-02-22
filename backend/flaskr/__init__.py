@@ -255,10 +255,7 @@ def create_app(test_config=None):
                 category=current_category['id']).all()
 
         if not questions:
-            return jsonify({
-                "success": False,
-                "message": "there is no question in this category"
-            })
+            abort(404)
 
         if pre_question_num_list:
             questions = [
