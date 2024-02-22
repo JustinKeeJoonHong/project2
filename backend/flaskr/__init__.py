@@ -265,7 +265,6 @@ def create_app(test_config=None):
             next_question = random.choice(questions).format()
         else:
             next_question = None
-        
 
         return jsonify({
             "success": True,
